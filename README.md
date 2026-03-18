@@ -2,6 +2,8 @@
 
 Your desktop bongo cat :3
 
+![Bongo Cat Demo](assets/demo.gif)
+
 ## Requirements
 - Python 3.7+
 - Windows (Recommended for global hooks)

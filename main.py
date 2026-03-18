@@ -18,6 +18,15 @@ keyboard_zones = {
     "0": "6", "p": "6",
 }
 
+
+def get_asset_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(os.path.dirname(__file__))
+
+    return os.path.join(base_path, relative_path)
+
 def change_image(self, image_path):
     new_pixmap = QtGui.QPixmap(image_path)
     if not new_pixmap.isNull():
@@ -37,7 +46,7 @@ class CharacterWindow(QMainWindow):
         )
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        pixmap = QtGui.QPixmap("assets/right_paw_up.png")
+        pixmap = QtGui.QPixmap(get_asset_path("assets/right_paw_up.png"))
         if pixmap.isNull():
             pixmap = QtGui.QPixmap(300, 300)
             pixmap.fill(Qt.transparent)        
@@ -78,7 +87,7 @@ class PawWindow(QMainWindow):
         self.screen_geo = QtWidgets.QApplication.desktop().geometry()
         self.setGeometry(self.screen_geo)
 
-        self.img = QImage("assets/paw_left_rotated.png")
+        self.img = QImage(get_asset_path("assets/paw_left_rotated.png"))
         if self.img.isNull():
             self.img = QImage(100, 100, QImage.Format_ARGB32)
             self.img.fill(QtGui.QColor(200, 100, 50))
@@ -148,7 +157,7 @@ class MouseWindow(QMainWindow):
             )
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        pixmap = QtGui.QPixmap("assets/mouse.png")
+        pixmap = QtGui.QPixmap(get_asset_path("assets/mouse.png"))
         if pixmap.isNull():
             pixmap = QtGui.QPixmap(300, 300)
             pixmap.fill(Qt.transparent)
@@ -179,7 +188,7 @@ class KeyboardWindow(QMainWindow):
         )
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        self.pixmap = QtGui.QPixmap("assets/keyboard.png")
+        self.pixmap = QtGui.QPixmap(get_asset_path("assets/keyboard.png"))
         if self.pixmap.isNull():
             self.pixmap = QtGui.QPixmap(200, 98)
             self.pixmap.fill(Qt.transparent)
@@ -207,13 +216,13 @@ class KeyboardWindow(QMainWindow):
         if key in keyboard_zones:
             zone = keyboard_zones[key]
             self.set_image(second_paw.positions[zone][2])
-            character.set_image("assets/no_paws.png")
+            character.set_image(get_asset_path("assets/no_paws.png"))
             second_paw.show()
             second_paw.set_position(zone)
     
     def report_idle(self):
-        self.set_image("assets/keyboard.png")
-        character.set_image("assets/right_paw_up.png")
+        self.set_image(get_asset_path("assets/keyboard.png"))
+        character.set_image(get_asset_path("assets/right_paw_up.png"))
         second_paw.hide()
     
     def set_image(self, image_path):
@@ -230,12 +239,12 @@ class SecondPawWindow(QMainWindow):
         self.character_pos = character_pos
 
         self.positions = {
-            "1": [150 + x_move, 110 + y_move, "assets/keyboard_red.png"],
-            "2": [164 + x_move, 110 + y_move, "assets/keyboard_yellow.png"],
-            "3": [186 + x_move, 110 + y_move, "assets/keyboard_green.png"],
-            "4": [204 + x_move, 115 + y_move, "assets/keyboard_cyan.png"],
-            "5": [220 + x_move, 120 + y_move, "assets/keyboard_blue.png"],
-            "6": [240 + x_move, 125 + y_move, "assets/keyboard_pink.png"]
+            "1": [150 + x_move, 110 + y_move, get_asset_path("assets/keyboard_red.png")],
+            "2": [164 + x_move, 110 + y_move, get_asset_path("assets/keyboard_yellow.png")],
+            "3": [186 + x_move, 110 + y_move, get_asset_path("assets/keyboard_green.png")],
+            "4": [204 + x_move, 115 + y_move, get_asset_path("assets/keyboard_cyan.png")],
+            "5": [220 + x_move, 120 + y_move, get_asset_path("assets/keyboard_blue.png")],
+            "6": [240 + x_move, 125 + y_move, get_asset_path("assets/keyboard_pink.png")]
         }
 
         self.picked_position = "1"
@@ -251,7 +260,7 @@ class SecondPawWindow(QMainWindow):
         self.screen_geo = QtWidgets.QApplication.desktop().geometry()
         self.setGeometry(self.screen_geo)
 
-        self.img = QImage("assets/paw_right_rotated.png")
+        self.img = QImage(get_asset_path("assets/paw_right_rotated.png"))
 
         self.anchor_left = QPointF(self.character_pos.x() + 149, self.character_pos.y() + 80)
         self.anchor_right = QPointF(self.character_pos.x() + 209, self.character_pos.y() + 90)

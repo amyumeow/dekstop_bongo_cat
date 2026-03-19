@@ -1,13 +1,13 @@
 import sys, os
 import keyboard
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow
 from PyQt5.QtCore import Qt, QPointF, QTimer, pyqtSignal, QThread
 from PyQt5.QtGui import QPainter, QImage, QPolygonF, QTransform, QCursor
-
+from controller import *
 
 x_move = 1600
-y_move = 850
+y_move = 550
 
 keyboard_zones = {
     "1": "1", "q": "1", "a": "1", "z": "1",
@@ -26,14 +26,6 @@ def get_asset_path(relative_path):
         base_path = os.path.abspath(os.path.dirname(__file__))
 
     return os.path.join(base_path, relative_path)
-
-def change_image(self, image_path):
-    new_pixmap = QtGui.QPixmap(image_path)
-    if not new_pixmap.isNull():
-        new_pixmap = new_pixmap.scaled(300, 300, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.label.setPixmap(new_pixmap)
-        self.label.resize(new_pixmap.size())
-
 
 class CharacterWindow(QMainWindow):
     def __init__(self):
@@ -318,6 +310,51 @@ class KeyboardListener(QThread):
                 if len(key) == 1 and key.isalnum():
                     self.key_pressed.emit(key)
 
+class HatWindow(QMainWindow):
+    def __init__(self, pos):
+        super().__init__()
+        self.setWindowFlags(
+            Qt.FramelessWindowHint |
+            Qt.WindowStaysOnTopHint |
+            Qt.WindowTransparentForInput|
+            Qt.Tool
+        )
+
+        self.position = pos
+        self.setAttribute(Qt.WA_TranslucentBackground)
+
+        pixmap = QtGui.QPixmap(get_asset_path("assets/hats/top_hat_rotated.png"))
+        if pixmap.isNull():
+            pixmap = QtGui.QPixmap(200, 200)
+            pixmap.fill(Qt.transparent)        
+        pixmap = pixmap.scaled(70, 70, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        self.label = QLabel(self)
+        self.label.setPixmap(pixmap)
+        self.label.resize(pixmap.size())
+        self.resize(pixmap.size())
+
+        screen = QtWidgets.QApplication.desktop().availableGeometry()
+        self.move(pos.x()+144, pos.y()-4)
+    
+    def change_hat(self, get_hat):
+        if get_hat[0] == "None":
+            hat.hide()
+        else:
+            new_pixmap = QtGui.QPixmap(get_asset_path(get_hat[0]))
+        
+            if not new_pixmap.isNull():
+                pixmap = new_pixmap.scaled(get_hat[1], get_hat[2], Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                
+                self.label.resize(pixmap.size())
+                self.resize(pixmap.size())
+                self.label.setPixmap(pixmap)
+            self.move(self.position.x()+get_hat[3], self.position.y()+get_hat[4])
+
+            hat.show()
+
+def quitApp():
+    os._exit(0)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -340,7 +377,14 @@ if __name__ == "__main__":
     paw.show()
 
     second_paw = SecondPawWindow(character.pos())
-    
 
-    keyboard.add_hotkey('end', lambda: app.quit())
+    hat = HatWindow(character.pos())
+    hat.show()
+
+    cat_controller = Controller(hat.change_hat, quitApp)
+
+    cat_controller.root.protocol("WM_DELETE_WINDOW", quitApp)
+
+    cat_controller.root.mainloop()
+
     sys.exit(app.exec_())

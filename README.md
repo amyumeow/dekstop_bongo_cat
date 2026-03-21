@@ -23,4 +23,3 @@ Run the script with administrator privileges:
 ```bash
   python main.py
 ```
-Exit: Press the End key to close the application.
